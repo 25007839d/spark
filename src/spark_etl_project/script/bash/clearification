@@ -1,0 +1,20 @@
+log,filling_id,circulor_no,ntm
+
+# sql loader
+1-sql loader
+external table
+udf
+url
+
+------------------------------------
+# sql loader command
+
+sqlldr control=controle.ctl log="D:\Brainwork\sql\loader\con.log"
+as sysdba
+sqlplus / as sysdba
+
+
+----------------note---------------------------------------
+config ini file = required
+if we need int value then convert it
+
