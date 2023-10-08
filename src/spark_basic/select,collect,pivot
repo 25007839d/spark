@@ -1,0 +1,70 @@
+import pyspark
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.appName('SparkByExamples.com').getOrCreate()
+data = [("James","Smith","USA","CA"),
+    ("Michael","Rose","USA","NY"),
+    ("Robert","Williams","USA","CA"),
+    ("Maria","Jones","USA","FL")
+  ]
+columns = ["firstname","lastname","country","state"]
+df = spark.createDataFrame(data = data, schema = columns)
+#df.show(truncate=False)
+#Select Single & Multiple Columns
+
+#df.select("firstname","lastname").show()
+#df.select(df.firstname,df.lastname).show()
+#df.select(df["firstname"],df["lastname"]).show()
+
+#By using col() function
+from pyspark.sql.functions import col
+#df.select(col("firstname"),col("lastname")).show()
+
+#Select columns by regular expression
+#df.select(df.colRegex("`^.*name*`")).show()
+
+
+# Select All columns from List
+#df.select(*columns).show()
+
+# Select All columns
+#df.select("*").show()
+#Selects first 3 columns and top 3 rows
+#df.select(df.columns[:3]).show(3)
+
+#Selects columns 2 to 4  and top 3 rows
+#df.select(df.columns[2:4]).show(3)
+
+##### #############collect
+
+df1=df.collect()
+#print(df1)
+
+###################Pivot
+
+
+import pyspark
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import expr
+#Create spark session
+data = [("Banana",1000,"USA"), ("Carrots",1500,"USA"), ("Beans",1600,"USA"), \
+      ("Orange",2000,"USA"),("Orange",2000,"USA"),("Banana",400,"China"), \
+      ("Carrots",1200,"China"),("Beans",1500,"China"),("Orange",4000,"China"), \
+      ("Banana",2000,"Canada"),("Carrots",2000,"Canada"),("Beans",2000,"Mexico")]
+
+columns= ["Product","Amount","Country"]
+df = spark.createDataFrame(data = data, schema = columns)
+#df.printSchema()
+#df.show(truncate=False)
+
+pivotDF = df.groupBy("Product").pivot("Country").sum("Amount")
+#pivotDF.printSchema()
+pivotDF.show(truncate=False)
+
+
+from pyspark.sql.functions import expr
+unpivotExpr = "stack(3, 'Canada', Canada, 'China', China, 'Mexico', Mexico) as (Country,Total)"
+unPivotDF = pivotDF.select("Product", expr(unpivotExpr)) \
+    .where("Total is not null")
+unPivotDF.show(truncate=False)
+unPivotDF.show()
